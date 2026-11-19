@@ -26,7 +26,7 @@
           :key="'t' + i"
           class="ser"
           :class="{ clicavel: s.acao }"
-          :src="s.src"
+          :src="asset(s.src)"
           :title="s.dica"
           :style="{
             bottom: '0',
@@ -84,7 +84,7 @@
         v-for="(s, i) in seresFundo"
         :key="'f' + i"
         class="ser"
-        :src="s.src"
+        :src="asset(s.src)"
         :style="{
           top: s.top + 'px',
           left: `calc(50% + ${s.x}px)`,
@@ -135,11 +135,11 @@
           <header class="modal-topo">
             <h2>Meu Currículo</h2>
             <div class="modal-acoes">
-              <a href="/curriculo.pdf" download>Baixar</a>
+              <a :href="asset('curriculo.pdf')" download>Baixar</a>
               <button type="button" @click="fecharCurriculo">✕</button>
             </div>
           </header>
-          <iframe src="/curriculo.pdf" title="Currículo"></iframe>
+          <iframe :src="asset('curriculo.pdf')" title="Currículo"></iframe>
         </div>
       </div>
     </Teleport>
@@ -148,6 +148,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
+import { asset } from '../utils/asset'
 
 type Ser = {
   src: string
@@ -333,7 +334,7 @@ img { position: absolute; image-rendering: pixelated; }
   padding: 130px 0 160px;
   background-image:
     linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0, rgba(0, 0, 0, 0) 450px),
-    url('/castelo/Chão_Pedra.jpg');
+    url('/castelo/Chao_Pedra.jpg');
   background-size: 100% 450px, 300px 140px;
   background-repeat: no-repeat, repeat;
   box-shadow: inset 0 24px 36px -12px rgba(0, 0, 0, 0.7);

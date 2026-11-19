@@ -3,7 +3,7 @@
   <main class="tela">
     <div class="cena">
       <!-- Fundo (a cena pode ter o seu próprio; o :key recria a imagem ao trocar) -->
-      <img :key="fundoAtual" class="fundo" :src="fundoAtual" alt="" @error="esconder" />
+      <img :key="fundoAtual" class="fundo" :src="asset(fundoAtual)" alt="" @error="esconder" />
 
       <RouterLink to="/cidade" class="voltar">← Voltar à vila</RouterLink>
 
@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
+import { asset } from '../utils/asset'
 import { cenas, configuracao, type Cena, type Escolha, type Teste } from '../data/historia'
 
 const mapa = new Map(cenas.map((c) => [c.id, c]))

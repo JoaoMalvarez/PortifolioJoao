@@ -3,7 +3,7 @@
   <main class="tela">
     <div class="cena" @mousemove="medir">
       <!-- Fundo (se a imagem não existir, aparece a cor provisória) -->
-      <img class="fundo" :src="fundo" alt="" @error="esconder" />
+      <img class="fundo" :src="asset(fundo)" alt="" @error="esconder" />
 
       <RouterLink to="/cidade" class="voltar">← Voltar à vila</RouterLink>
       <h1 class="titulo">A Igreja</h1>
@@ -17,7 +17,7 @@
         :aria-label="v.titulo"
         @click="aberto = v"
       >
-        <img v-if="v.imagem" :src="v.imagem" alt="" @error="esconder" />
+        <img v-if="v.imagem" :src="asset(v.imagem)" alt="" @error="esconder" />
         <span v-else class="cera"></span>
         <span class="rotulo">{{ v.titulo }}</span>
       </button>
@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { asset } from '../utils/asset'
 import { velas } from '../data/velas'
 
 // pega o tipo direto da lista (funciona qualquer que seja o nome do tipo)

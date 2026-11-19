@@ -3,7 +3,7 @@
   <main class="tela">
     <div class="cena" @mousemove="medir">
       <!-- Fundo (se a imagem não existir, aparece a cor provisória) -->
-      <img class="fundo" :src="fundo" alt="" @error="esconder" />
+      <img class="fundo" :src="asset(fundo)" alt="" @error="esconder" />
 
       <RouterLink to="/cidade" class="voltar">← Voltar à vila</RouterLink>
       <h1 class="titulo">A Mesa do Alquimista</h1>
@@ -17,7 +17,7 @@
         :aria-label="p.nome"
         @click="aberto = p"
       >
-        <img v-if="p.imagem" :src="p.imagem" alt="" @error="esconder" />
+        <img v-if="p.imagem" :src="asset(p.imagem)" alt="" @error="esconder" />
         <span v-else class="vidro"><span class="liquido"></span></span>
         <span class="rotulo">{{ p.nome }}</span>
       </button>
@@ -36,7 +36,7 @@
 
           <template v-if="aberto.foto1">
             <h4>Imagem do Projeto</h4>
-            <img :src="aberto.foto1" alt="" @error="esconder" />
+            <img :src="asset(aberto.foto1)" alt="" @error="esconder" />
           </template>
 
           <div class="links">
@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { asset } from '../utils/asset'
 import { projetos, type Projeto } from '../data/projetos'
 
 const fundo = '/alquimista/Fundo.jpg'

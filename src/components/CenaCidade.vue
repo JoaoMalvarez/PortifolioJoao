@@ -3,7 +3,7 @@
   <main class="tela">
     <div class="cena" @mousemove="medir" @click="marcar">
       <!-- Fundo -->
-      <img class="fundo" :src="imagemVila" alt="Vila" @error="esconder" />
+      <img class="fundo" :src="asset(imagemVila)" alt="Vila" @error="esconder" />
 
       <!-- Casas de enfeite -->
       <img
@@ -11,7 +11,7 @@
         :key="'e' + i"
         class="enfeite"
         :class="{ espelhado: e.flip }"
-        :src="e.imagem"
+        :src="asset(e.imagem)"
         :style="{ left: e.x + '%', top: e.y + '%', width: e.w + '%', zIndex: Math.round(e.y * 10) }"
         alt=""
         @error="esconder"
@@ -24,7 +24,7 @@
           v-if="l.frente"
           class="casa-fundo"
           :class="{ espelhado: l.flip, brilho: hover === l.id }"
-          :src="l.imagem"
+          :src="asset(l.imagem)"
           :style="{ left: l.x + '%', top: l.y + '%', width: l.w + '%', zIndex: Math.round(l.y * 10) }"
           alt=""
           @error="esconder"
@@ -43,7 +43,7 @@
           @mouseenter="hover = l.id"
           @mouseleave="hover = null"
         >
-          <img :class="{ espelhado: l.flip }" :src="l.imagem" :alt="l.nome" @error="esconder" />
+          <img :class="{ espelhado: l.flip }" :src="asset(l.imagem)" :alt="l.nome" @error="esconder" />
           <span class="placa">{{ l.nome }}</span>
         </button>
       </template>
@@ -63,7 +63,7 @@
       >
         <img
           :class="{ espelhado: s.flip && !s.anda, anda: s.anda }"
-          :src="s.src"
+          :src="asset(s.src)"
           :style="{ animationDelay: i * 0.4 + 's' }"
           alt=""
           @error="esconder"
@@ -87,6 +87,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { lugares, enfeites } from '../data/lugares'
+import { asset } from '../utils/asset'
 
 const router = useRouter()
 

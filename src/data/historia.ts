@@ -47,7 +47,7 @@ export const cenas: Cena[] = [
       'Após conversar com um comerciante suspeito e ele te prometer uma vida de riquezas, você acorda em uma floresta, nela você vê um brilho na distância.',
       'Há uma trilha de terra e, mais adiante, um riacho com pedras, que está no caminho do brilho.',
     ],
-    fundo: '/bosque/começo.jpg',
+    fundo: '/bosque/comeco.jpg',
     escolhas: [
       { texto: 'Seguir pela trilha de terra', vai: 'trilha' },
       {
@@ -67,7 +67,7 @@ export const cenas: Cena[] = [
     id: 'teste',
     titulo: 'Teste de Percepção',
     texto: ['Enquanto você caminha para a luz você começa a perceber algo...'],
-    fundo: '/bosque/começo.jpg', // provisório: troque quando tiver uma imagem só desta cena
+    fundo: '/bosque/comeco.jpg', // provisório: troque quando tiver uma imagem só desta cena
     escolhas: [
       {
         texto: 'Seguir até a clareira',
