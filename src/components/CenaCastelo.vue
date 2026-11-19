@@ -430,20 +430,27 @@ img { position: absolute; image-rendering: pixelated; }
 }
 
 
-/* ---------- CLICÁVEL ---------- */
+/* ---------- CLICÁVEL (o personagem do currículo) ---------- */
 .clicavel {
   cursor: pointer;
-  filter: drop-shadow(0 0 8px #e0b040);
-  transition: filter 0.2s;
-  animation: twinkle 2s infinite ease-in-out;
-}
-.clicavel:hover {
-  filter: drop-shadow(0 0 18px #ffd36b) brightness(1.15);
+  /* respira + a luz pulsa, as duas ao mesmo tempo */
+  animation: respirar 2.4s ease-in-out infinite, pulsar 1.8s ease-in-out infinite;
 }
 
-@keyframes twinkle {
-  0%, 100% { filter: drop-shadow(0 0 10px #e0b040) brightness(0.9); }
-  50% { filter: drop-shadow(0 0 20px #e0b040) brightness(1.2);; }
+@keyframes pulsar {
+  0%, 100% { filter: drop-shadow(0 0 6px #e0b040) drop-shadow(0 0 2px #e0b040); }
+  50%      { filter: drop-shadow(0 0 24px #e0b040) drop-shadow(0 0 10px #e0b040); }
+}
+
+/* ao passar o mouse, a luz para de piscar e fica forte e fixa */
+.clicavel:hover {
+  animation: respirar 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px #e0b040) brightness(1.15);
+}
+
+/* quem desativa animações no sistema não vê a luz piscando */
+@media (prefers-reduced-motion: reduce) {
+  .clicavel { animation: none; filter: drop-shadow(0 0 10px #e0b040); }
 }
 /* ---------- SAÍDA (fim do tapete) ---------- */
 .saida {

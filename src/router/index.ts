@@ -5,6 +5,7 @@ import LugarView from '@/views/LugarView.vue'
 import AlquimistaView from '@/views/AlquimistaView.vue'
 import BibliotecaView from '@/views/BibliotecaView.vue'
 import IgrejaView from '@/views/IgrejaView.vue'
+import BosqueView from '@/views/BosqueView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,7 @@ const router = createRouter({
     { path: '/cidade/biblioteca', name: 'biblioteca', component: BibliotecaView },
     { path: '/cidade/igreja', name: 'igreja', component: IgrejaView },
     { path: '/cidade/:lugar', name: 'lugar', component: LugarView },
+    { path: '/cidade/bosque', name: 'bosque', component: BosqueView },
 
   ],
   scrollBehavior() {

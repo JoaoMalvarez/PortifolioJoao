@@ -129,7 +129,6 @@ const seres: SerVila[] = [
   { src: '/personagens/p14.png', x: 70, y: 100, w: 10, anda: 90 },
   { src: '/personagens/p15.png', x: 55, y: 63},
   { src: '/personagens/p16.png', x: 61, y: 80, w: 7},
-  { src: '/personagens/p17.png', x: 5, y: 82, w: 8 },
   { src: '/personagens/p18.png', x: 43, y: 60 },
   { src: '/personagens/p19.png', x: 32, y: 92, w: 8 },
 ]

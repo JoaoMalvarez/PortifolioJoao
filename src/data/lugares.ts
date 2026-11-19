@@ -16,7 +16,7 @@ const ESCALA = 1
 
 export type Lugar = {
   id: string // vira a rota: /cidade/alquimista
-  nome: string // texto da plaquinha
+  nome?: string // texto da plaquinha
   titulo: string // título da tela do lugar
   descricao: string
   imagem: string
@@ -61,6 +61,16 @@ const baseLugares: Lugar[] = [
     x: 79,
     y: 96,
     w: 65,
+  },
+  {
+    id: 'bosque',
+    titulo: 'O Bosque',
+    descricao: '',
+    imagem: '/personagens/p17.png', 
+    x: 5, 
+    y: 82, 
+    w: 8,
+    frente: true,
   },
 ]
 
