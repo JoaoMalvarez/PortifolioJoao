@@ -159,7 +159,7 @@ export const cenas: Cena[] = [
       },
       {
         texto: 'Tentar orar aos deuses por iluminação',
-        teste: { dificuldade: 2, sucesso: 'masmorra2', falha: 'abandonado-pelos-deuses', dano: 1 },
+        teste: { dificuldade: 4, sucesso: 'masmorra2', falha: 'abandonado-pelos-deuses', dano: 1 },
       },
     ],
   },
