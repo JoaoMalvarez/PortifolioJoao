@@ -37,19 +37,38 @@
 
       <!-- Dado -->
       <div v-if="rolando || resultado" class="dado-fundo">
-        <div class="dado" :class="{ girando: rolando }">{{ numero }}</div>
+        <div class="mesa-dado" :class="{ critico: resultado?.critico, desastre: resultado?.desastre }">
+          <div class="dado-sombra" :class="{ rolando }"></div>
+          <!-- voo: o dado é jogado e quica; giro: ele gira em 3D -->
+          <div class="dado-voo" :class="{ rolando }">
+            <div class="dado-giro" :class="{ rolando, pousou: !!resultado }">
+              <svg class="dado-svg" viewBox="0 0 100 100" aria-hidden="true">
+                <polygon class="face" points="50,4 91,27 91,73 50,96 9,73 9,27" />
+                <polygon class="face-meio" points="50,22 76,66 24,66" />
+                <path
+                  class="arestas"
+                  d="M50 4V22 M91 27L50 22 M91 27L76 66 M91 73L76 66 M50 96L76 66 M50 96L24 66 M9 73L24 66 M9 27L24 66 M9 27L50 22"
+                />
+              </svg>
+              <span class="dado-numero">{{ numero }}</span>
+            </div>
+          </div>
+        </div>
 
-        <div v-if="resultado" class="resultado">
-          <p v-if="resultado.critico" class="destaque">Acerto crítico!</p>
-          <p v-else-if="resultado.desastre" class="destaque">Falha crítica!</p>
-          <p>
-            Você tirou {{ resultado.dado }}
-            <template v-if="resultado.bonus">+ {{ resultado.bonus }} = {{ resultado.total }}</template>
-            (precisava de {{ resultado.dificuldade }})
-          </p>
-          <p class="veredito" :class="{ ok: resultado.passou }">{{ resultado.passou ? 'Sucesso!' : 'Falhou!' }}</p>
-          <p v-if="resultado.perdeu">Você perdeu {{ resultado.perdeu }} de vida.</p>
-          <button type="button" @click="continuar">Continuar</button>
+        <!-- área reservada: o dado não "pula" quando o resultado aparece -->
+        <div class="area-resultado">
+          <div v-if="resultado" class="resultado">
+            <p v-if="resultado.critico" class="destaque">Acerto crítico!</p>
+            <p v-else-if="resultado.desastre" class="destaque">Falha crítica!</p>
+            <p>
+              Você tirou {{ resultado.dado }}
+              <template v-if="resultado.bonus">+ {{ resultado.bonus }} = {{ resultado.total }}</template>
+              (precisava de {{ resultado.dificuldade }})
+            </p>
+            <p class="veredito" :class="{ ok: resultado.passou }">{{ resultado.passou ? 'Sucesso!' : 'Falhou!' }}</p>
+            <p v-if="resultado.perdeu">Você perdeu {{ resultado.perdeu }} de vida.</p>
+            <button type="button" @click="continuar">Continuar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -144,17 +163,25 @@ let timer: number | undefined
 
 const d20 = () => Math.floor(Math.random() * 20) + 1
 
+// Pausa (em ms) entre um número e o próximo: o dado começa rápido e vai
+// desacelerando até parar. A soma é 1200 ms, igual à duração das animações
+// do dado no CSS (se mudar um, mude o outro).
+const ATRASOS = [45, 45, 50, 55, 60, 70, 85, 100, 120, 145, 175, 250]
+
 function rolar(t: Teste) {
+  window.clearTimeout(timer)
   rolando.value = true
   resultado.value = null
-  let ciclos = 0
 
-  timer = window.setInterval(() => {
-    numero.value = d20()
-    ciclos++
-    if (ciclos < 12) return
+  let i = 0
+  const passo = () => {
+    if (i < ATRASOS.length) {
+      numero.value = d20()
+      timer = window.setTimeout(passo, ATRASOS[i++])
+      return
+    }
 
-    window.clearInterval(timer)
+    // o dado parou: agora sim sorteia o resultado de verdade
     const dado = d20()
     numero.value = dado
     const bonus = t.bonus ?? 0
@@ -175,7 +202,8 @@ function rolar(t: Teste) {
       proxima: passou ? t.sucesso : t.falha,
     }
     rolando.value = false
-  }, 70)
+  }
+  passo()
 }
 
 function continuar() {
@@ -186,7 +214,7 @@ function continuar() {
   irPara(vida.value === 0 ? configuracao.cenaSemVida : r.proxima)
 }
 
-onBeforeUnmount(() => window.clearInterval(timer))
+onBeforeUnmount(() => window.clearTimeout(timer))
 </script>
 
 <style scoped>
@@ -301,21 +329,126 @@ onBeforeUnmount(() => window.clearInterval(timer))
   text-align: center;
 }
 
-.dado {
-  display: grid;
-  place-items: center;
-  width: 6em;
-  height: 6em;
-  font-size: 2.4em;
-  color: #3b2a1c;
-  background: #e8d5a8;
-  border: 4px solid #5a3d1c;
-  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6);
+/* mesa onde o dado cai (perspective dá a profundidade do giro 3D) */
+.mesa-dado {
+  position: relative;
+  width: 9em;
+  height: 9em;
+  perspective: 700px;
+  --corpo: #e8d5a8;
+  --meio: #d8c08a;
+  --tinta: #3b2a1c;
 }
-.dado.girando { animation: girar 0.35s linear infinite; }
-@keyframes girar {
-  0%   { rotate: 0deg; }
-  100% { rotate: 360deg; }
+.mesa-dado.critico { --corpo: #f2c84b; --meio: #e0a92a; }
+.mesa-dado.desastre { --corpo: #8b1e2d; --meio: #6f1723; --tinta: #f1e3c0; }
+
+/* sombra no chão: some e volta conforme o dado sobe e desce */
+.dado-sombra {
+  position: absolute;
+  left: 50%;
+  bottom: -0.8em;
+  width: 7em;
+  height: 1.3em;
+  margin-left: -3.5em;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.6;
+}
+.dado-sombra.rolando { animation: sombra 1.2s linear forwards; }
+@keyframes sombra {
+  0%   { scale: 0.3; opacity: 0; }
+  28%  { scale: 1;    opacity: 0.6; }
+  44%  { scale: 0.7;  opacity: 0.35; }
+  58%  { scale: 1;    opacity: 0.6; }
+  70%  { scale: 0.8;  opacity: 0.4; }
+  80%  { scale: 1;    opacity: 0.6; }
+  88%  { scale: 0.92; opacity: 0.5; }
+  100% { scale: 1;    opacity: 0.6; }
+}
+
+/* voo: cai de cima, quica 3 vezes (cada quique menor) e para */
+.dado-voo { width: 100%; height: 100%; }
+.dado-voo.rolando { animation: quicar 1.2s linear forwards; }
+@keyframes quicar {
+  0%   { translate: -22em -18em; opacity: 0; animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  4%   { opacity: 1; }
+  28%  { translate: -6em 0;      animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1); }
+  44%  { translate: -3em -5em;   animation-timing-function: cubic-bezier(0.5, 0, 1, 0.6); }
+  58%  { translate: -1em 0;      animation-timing-function: ease-out; }
+  70%  { translate: 0 -2.2em;    animation-timing-function: ease-in; }
+  80%  { translate: 0 0;         animation-timing-function: ease-out; }
+  88%  { translate: 0 -0.7em;    animation-timing-function: ease-in; }
+  100% { translate: 0 0; opacity: 1; }
+}
+
+/* giro: várias voltas em 3D que desaceleram e terminam "de frente" (múltiplos de 360) */
+.dado-giro {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.dado-giro.rolando { animation: giro3d 1.2s cubic-bezier(0.2, 0.6, 0.3, 1) forwards; }
+@keyframes giro3d {
+  from { transform: rotateX(0) rotateY(0) rotateZ(0); }
+  to   { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg); }
+}
+
+/* pouso: um "achatadinho" quando o dado para */
+.dado-giro.pousou { animation: pousar 0.3s ease-out; }
+@keyframes pousar {
+  0%   { scale: 1.12 0.86; }
+  60%  { scale: 0.96 1.04; }
+  100% { scale: 1 1; }
+}
+/* 20: pulsa dourado | 1: treme */
+.mesa-dado.critico .dado-giro.pousou { animation: pousar 0.3s ease-out, pulso 0.7s ease-in-out 0.3s 2; }
+.mesa-dado.critico .dado-svg { filter: drop-shadow(0 0 0.8em #ffd36b); }
+.mesa-dado.desastre .dado-giro.pousou { animation: pousar 0.3s ease-out, abalo 0.5s ease-in-out 0.3s; }
+@keyframes pulso {
+  0%, 100% { scale: 1 1; }
+  50%      { scale: 1.12 1.12; }
+}
+@keyframes abalo {
+  0%, 100% { translate: 0 0; }
+  20%      { translate: -0.35em 0; }
+  40%      { translate: 0.35em 0; }
+  60%      { translate: -0.25em 0; }
+  80%      { translate: 0.25em 0; }
+}
+
+/* desenho do d20 (hexágono + triângulo central + arestas) */
+.dado-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0.15em 0.15em 0 rgba(0, 0, 0, 0.5));
+}
+.face, .face-meio { stroke: #3b2a1c; stroke-linejoin: round; }
+.face { fill: var(--corpo); stroke-width: 4; }
+.face-meio { fill: var(--meio); stroke-width: 3; }
+.arestas { fill: none; stroke: #3b2a1c; stroke-width: 2.5; stroke-linecap: round; }
+
+.dado-numero {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  translate: -50% -50%;
+  font-size: 2.1em;
+  line-height: 1;
+  color: var(--tinta);
+}
+
+.area-resultado { min-height: 11em; }
+
+/* quem prefere menos movimento: o número ainda troca, mas o dado não voa nem gira */
+@media (prefers-reduced-motion: reduce) {
+  .dado-voo.rolando,
+  .dado-giro.rolando,
+  .dado-sombra.rolando { animation: none; }
 }
 
 .resultado p { margin: 0 0 0.4em; }
